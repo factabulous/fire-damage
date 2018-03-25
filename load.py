@@ -18,9 +18,6 @@ from util import GridHelper
 
 this = sys.modules[__name__]	# For holding module globals
 
-window=tk.Tk()
-window.withdraw()
-
 bonds = { "marauder": 10000, "cyclops": 2000000, "basilisk": 6000000, "medusa": 10000000 }
 
 def local_file(name):
@@ -31,9 +28,6 @@ def plugin_start():
     return "FireDamage"
 
 def plugin_stop():
-    window.destroy()
-
-
 
 def _plugin_app(parent):
     """
@@ -51,12 +45,45 @@ def _plugin_app(parent):
 def matches(d, field, value):
    return field in d and value == d[field]:
 
+class Reporter(thraeding.Thread):
+    def __init__(self, payload):
+        threading.Thread.__init__(self)
+        self.payload = payload.copy()
+
+    def run(self):
+        try:
+            requests.post("https://docs.google.com/forms/d/e/1FAIpQLSdP0eoGf2Cq8uEze6ujmdmZGOiRZ2m2sU7eJe4lXEJzPLj32w/formResponse", data = self.payload)
+        except:
+            print("[fire-damage] Issue posting message " + str(sys.exc_info()[0])
+      
+def report(**fields):
+    
+    payload = {}
+
+    if 'system' in fields:
+        payload['entry.132486708'] = fields['system']
+    if 'ship' in fields:
+        payload['entry.1003893312'] = fields['ship']
+    if 'ship_count' in fields: # Confirmed
+        payload['entry.1351220981'] = fields['ship_count']
+    if 'bonds' in fields:
+        payload['entry.1086192416'] = fields['reward']
+    payload['submit'] = 'Submit'
+    # Async update to avoid GUI jamming
+    Reporter(payload).start()
+
+
+def rewardToShip(reward):
+    for k in bonds:
+        if bonds[k] == reward:
+            return k
+    return "Unknown {}".format(reward)
+
 def reportKill(cmdr, system, reward):
-    pass
+    return report( system = system, ship = rewardToShip(reward), ship_count = 1 )
 
 def reportBond(cmdr, system, reward):
-    pass
-   
+    return report( system = system, reward = reward )
 
 def journal_entry(cmdr, is_beta, system, station, entry, state):
     if is_beta:
