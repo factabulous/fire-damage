@@ -8,5 +8,5 @@ To install:
 
 To use - just kill Thargoids as usual - the kills (and where you hand in your
 bonds for the Pilots Federation) are reported to a Google Form, and end up in 
-a Google Sheet. You can see the results here <tdb>
+a Google Sheet. You can see the results here https://docs.google.com/spreadsheets/d/e/2PACX-1vSkqa3XQTq8AD2fPvFKGHAnC1Ck6HWcmYAS9CpjyDGMmdQMFJH5Jb8h_VSJLyv4j0jp9eZtVUCAeDGW/pubhtml
 
