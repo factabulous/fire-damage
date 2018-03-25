@@ -1,20 +1,13 @@
 # -*- coding: utf-8 -*-
 
-import mats
-import events
 import os
 import Tkinter as tk
 import myNotebook as nb
 from config import config
 import sys
-import Queue
-import watcher
-import visited
 import plug
-import heading
 import requests
 from sys import platform
-from util import GridHelper
 
 this = sys.modules[__name__]	# For holding module globals
 
