@@ -58,7 +58,7 @@ def report(**fields):
         payload['entry.132486708'] = fields['system']
     if 'ship' in fields:
         payload['entry.1003893312'] = fields['ship']
-        print('[fire-damage] ship : ' + fields['ship'])
+        debug('[fire-damage] ship : ' + fields['ship'])
     if 'ship_count' in fields: # Confirmed
         payload['entry.1351220981'] = fields['ship_count']
         this.kill_count = this.kill_count + fields['ship_count']
