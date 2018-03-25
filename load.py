@@ -13,10 +13,10 @@ this.bond_count = 0
 
 bonds = { "Scout": 10000, "Cyclops": 2000000, "Basilisk": 6000000, "Medusa": 10000000 }
 
-
+def debug(msg):
+    pass
 
 def plugin_start():
-    #this._IMG_CLIPBOARD = tk.PhotoImage(file = local_file('clipboard.gif'))
     return "FireDamage"
 
 def plugin_stop():
@@ -46,7 +46,7 @@ class Reporter(threading.Thread):
     def run(self):
         try:
             requests.post("https://docs.google.com/forms/d/e/1FAIpQLSdP0eoGf2Cq8uEze6ujmdmZGOiRZ2m2sU7eJe4lXEJzPLj32w/formResponse", data = self.payload)
-            print("[fire-damage] After post")
+            debug("[fire-damage] After post")
         except:
             print("[fire-damage] Issue posting message " + str(sys.exc_info()[0]))
       
@@ -67,7 +67,7 @@ def report(**fields):
         this.bond_count = this.bond_count + fields['bonds']
     this.status.set("{} kills, {} CR bonds redeemed this session".format(this.kill_count, this.bond_count))
     payload['submit'] = 'Submit'
-    print("[fire-damage] Reporting a Thargoid state {}".format(payload))
+    debug("[fire-damage] Reporting a Thargoid state {}".format(payload))
     # Async update to avoid GUI jamming
     Reporter(payload).start()
 
@@ -88,12 +88,12 @@ def journal_entry(cmdr, is_beta, system, station, entry, state):
     if is_beta:
         return
     if entry['event'] == "FactionKillBond":
-        print("[fire-damage] Bond")
+        debug("[fire-damage] Bond")
         if matches(entry, 'VictimFaction', '$faction_Thargoid;') and 'Reward' in entry:
             reportKill(cmdr, system, entry['Reward'])
 
     if entry['event'] == 'RedeemVoucher':
-        print("[fire-damage] RedeemBond")
+        debug("[fire-damage] RedeemBond")
         if matches(entry, 'Faction', 'PilotsFederation') and matches(entry, 'Type', 'CombatBond'):
             
             reportBond(cmdr, system, entry['Amount'])
