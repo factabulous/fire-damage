@@ -5,20 +5,36 @@ import Tkinter as tk
 import sys
 import threading
 import requests
-
-version = "0.0.1"
+from config import config
+import time
+import re
 
 this = sys.modules[__name__]	# For holding module globals
 
+this.version = "0.0.1"
+this.new_version = version
 this.kill_count = 0
 this.bond_count = 0
-
-bonds = { "Scout": 10000, "Cyclops": 2000000, "Basilisk": 6000000, "Medusa": 10000000 }
 
 def debug(msg):
     pass
 
 def plugin_start():
+    last_version_check = float(config.get("firedamage.vcheck") or "0")
+    now = time.time()
+    if now > last_version_check + 24 * 3600:
+        debug("Checking for a new version")
+        config.set("firedamage.vcheck", str(now))
+        src = requests.get("https://raw.githubusercontent.com/factabulous/fire-damage/master/load.py").text
+        for line in src.split("\n"):
+            if line.startswith("version = "):
+                debug("Found a line <" + line + ">")
+                res = re.match(r'^version\s*=\s*"(\d+\.\d+\.\d+)"', line)
+                if res:
+                    this.new_version = res.group(1)
+                    debug("New version = {}".format(this.new_version))
+                break
+        
     return "FireDamage"
 
 def plugin_stop():
@@ -33,6 +49,9 @@ def plugin_app(parent):
  
     # Current Action being recommended 
     this.status = tk.StringVar() 
+    if this.new_version != this.version:
+        this.status.set("New version of the fire-damage plugin available")
+        debug("Reported new version to GUI")
     tk.Label(this.status_frame, textvariable=this.status).grid(row=0, column = 0,sticky=tk.W)
 
     return this.status_frame
@@ -75,9 +94,11 @@ def report(**fields):
 
 
 def rewardToShip(reward):
+    bonds = { "Scout": 10000, "Cyclops": 2000000, "Basilisk": 6000000, "Medusa": 10000000 }
     for k in bonds:
         if bonds[k] == reward:
             return k
+    print("[fire-damage] Unrecognised reward level {}".format(reward))
     return "Unknown {}".format(reward)
 
 def reportKill(cmdr, system, reward):
