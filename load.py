@@ -6,6 +6,8 @@ import sys
 import threading
 import requests
 
+version = "0.0.1"
+
 this = sys.modules[__name__]	# For holding module globals
 
 this.kill_count = 0
